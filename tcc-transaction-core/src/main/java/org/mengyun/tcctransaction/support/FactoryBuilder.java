@@ -13,37 +13,43 @@ public final class FactoryBuilder {
     private FactoryBuilder() {
 
     }
-
+    //Bean工厂集合
     private static List<BeanFactory> beanFactories = new ArrayList<BeanFactory>();
 
+    /**
+     * 类 与 Bean工厂 的映射
+     */
     private static ConcurrentHashMap<Class, SingeltonFactory> classFactoryMap = new ConcurrentHashMap<Class, SingeltonFactory>();
 
+    //获得指定类单例工厂
     public static <T> SingeltonFactory<T> factoryOf(Class<T> clazz) {
 
         if (!classFactoryMap.containsKey(clazz)) {
 
             for (BeanFactory beanFactory : beanFactories) {
                 if (beanFactory.isFactoryOf(clazz)) {
+                    //如果指定的key或者value是空的话可以成功put
                     classFactoryMap.putIfAbsent(clazz, new SingeltonFactory<T>(clazz, beanFactory.getBean(clazz)));
                 }
             }
-
             if (!classFactoryMap.containsKey(clazz)) {
                 classFactoryMap.putIfAbsent(clazz, new SingeltonFactory<T>(clazz));
             }
         }
-
         return classFactoryMap.get(clazz);
     }
 
+    //将bean工厂注册都当前builder
     public static void registerBeanFactory(BeanFactory beanFactory) {
         beanFactories.add(beanFactory);
     }
 
+    //单例工厂
     public static class SingeltonFactory<T> {
 
+        //单例
         private volatile T instance = null;
-
+        //类名
         private String className;
 
         public SingeltonFactory(Class<T> clazz, T instance) {
@@ -55,8 +61,8 @@ public final class FactoryBuilder {
             this.className = clazz.getName();
         }
 
+        //创建类的单例实例
         public T getInstance() {
-
             if (instance == null) {
                 synchronized (SingeltonFactory.class) {
                     if (instance == null) {
@@ -72,7 +78,6 @@ public final class FactoryBuilder {
                     }
                 }
             }
-
             return instance;
         }
 

@@ -26,7 +26,7 @@ public class TransactionManager {
     public void setTransactionRepository(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
     }
-
+    
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
